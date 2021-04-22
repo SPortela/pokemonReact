@@ -1,19 +1,21 @@
-import React from "react";
+import React, { Component } from "react";
 import pokemon from "../assets/pikachu.jpg";
 
-class PokemonDetail extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showAbility: false,
-      abilityName: "",
-    };
-  }
+class PokemonDetail extends Component {
+  state = {
+    pokemonInDetail: [],
+  };
+  componentDidMount = () => {
+    this.state.pokemonInDetail = this.props.pokemonToDetail;
+  };
   render() {
+    if (this.state.pokemonInDetail == null) {
+      return "";
+    }
     return (
       <div className="detail">
-        <div className="detail__title">Pikachu</div>
-        <picture className="">
+        <div className="detail__title">{this.state.pokemonInDetail.name}</div>
+        <picture className="detail__picture">
           <img
             className="detail__image"
             src={pokemon}
@@ -21,9 +23,10 @@ class PokemonDetail extends React.Component {
           />
         </picture>
         <div className="detail__Info">
-          <div>Id: 0001</div>
+          <div>Id: 001</div>
           <div>Name: Pikachu</div>
           <div>Habilitty: Eléctrico</div>
+          <div>Description: This is pikachu is Ash's pokemon</div>
         </div>
       </div>
     );

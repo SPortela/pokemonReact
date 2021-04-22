@@ -1,28 +1,53 @@
-import React from "react";
-import { connect } from 'react-redux';
-import pokemon from "../assets/pikachu.jpg";
-import { getPokemon } from "../actions/pokemonActions"
+import React, { Component } from "react";
 
-class PokemonSingle extends React.Component {
+class PokemonSingle extends Component {
+  state = {
+    pokemonInSingle: {
+      sprites: [],
+    },
+    loading: false,
+    error: null,
+  };
   componentDidMount = () => {
-    const { pokemon } = this.props;
-    this.props.getPokemon({ url: pokemon.url });
+    console.log(this.props)
+    this.fetchPokemons();
   };
 
-  handleSelect = (pokemon) => {
-    this.props.onSelectPokemon(pokemon);
+  fetchPokemons = async () => {
+    try {
+      const response = await fetch(this.props.pokemonToSingle.url);
+      const data = await response.json();
+      this.setState({
+        loading: false,
+        pokemonInSingle: data,
+      });
+    } catch (error) {
+      this.setState({ loading: false, error: error });
+    }
   };
+
+  handleClick = (pokemon) => {
+    this.props.onSelectPokemon(pokemon);
+  }
 
   render() {
-    const mainImage = pokemon.sprites ? pokemon.sprites.front_default : null;
+    const pokemonNextImage = this.state.pokemonInSingle.sprites
+      ? this.state.pokemonInSingle.sprites.front_default
+      : this.state.pokemonInSingle.sprites.other.dream_world
+      ? this.state.pokemonInSingle.sprites.other.dream_world.front_default
+      : null;
     return (
-      <div className="col" onClick={() => this.handleSelect(pokemon)}>
+      <div
+        className="col"
+        onClick={() => this.handleClick(this.props.pokemonToSingle)}
+      >
         <div className="item">
           <picture>
             <img
-              className="item__pokemon-img"
-              src={mainImage}
-              alt={pokemon.name}
+              className="item__pokemon-img w-100 h-100"
+              src={pokemonNextImage}
+              alt={this.props.pokemonToSingle.name}
+              title={this.props.pokemonToSingle.name}
             />
           </picture>
         </div>
@@ -30,9 +55,5 @@ class PokemonSingle extends React.Component {
     );
   }
 }
-const mapStateToProps = ({ pokemonRedux }) => {
-  const { pokemonList } = pokemonRedux;
-  return { pokemonList }
-}
 
-export default connect(mapStateToProps, { getPokemon })(PokemonSingle);   
+export default PokemonSingle;

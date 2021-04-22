@@ -15,9 +15,9 @@ import {
 const initialState = {
     search: null,
     pokemonList: [],
-    pokemonSingle: null,
-    pokemondescription: null,
-    pokemonability: null,
+    pokeItem: null,
+    pokedescription: null,
+    pokeability: null,
     pokemonSearch: [],
     fetchpokemons: null,
     searchError: null
@@ -36,7 +36,7 @@ function rootReducer(state = initialState, action) {
         case GET_POKEMON_ERROR:
             return { ...state, searchError: action.payload }
         case GET_POKEMON_DESCRIPTION:
-            return { ...state, pokemondescription: null }
+            return { ...state, pokedescription: null }
         case GET_POKEMON_DESCRIPTION_SUCCESS:
             const descripObject = action.payload.flavor_text_entries;
             let result = ''
@@ -44,6 +44,7 @@ function rootReducer(state = initialState, action) {
                 if (text.language.name === 'en' && text.version.name === 'alpha-sapphire') {
                     result = text.flavor_text;
                 }
+
             });
             return { ...state, pokedescription: result }
         case GET_POKEMON_ABILITY:
@@ -55,8 +56,9 @@ function rootReducer(state = initialState, action) {
                 if (text.language.name === 'en' && text.version_group.name === 'ultra-sun-ultra-moon') {
                     retAbility = text.flavor_text;
                 }
+
             });
-            return { ...state, pokemonability: retAbility }
+            return { ...state, pokeability: retAbility }
         case FETCH_POKEMONS:
             return { ...state, fetchpokemons: null }
         case FETCH_POKEMONS_SUCCESS:
@@ -64,6 +66,7 @@ function rootReducer(state = initialState, action) {
         default:
             return state
     }
+
 }
 
 export default rootReducer

@@ -1,75 +1,64 @@
-import React from "react";
-import { connect } from "react-redux";
-import { getPokemon, fetchPokemons } from "../actions/pokemonActions";
+import React, { Component } from "react";
 import PokemonSingle from "./pokemonSingle";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-class PokemonList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      pokeSearch: [],
-      nextPageUrl: this.props.search.next,
-      infinitHasMore: true,
-    };
-  }
+class PokemonList extends Component {
+  state = {
+    nextUrl: this.props.pokemonsToList.next,
+    infinitHasMore: true,
+    pokemonsInList: this.props.pokemonsToList,
+    searchError: this.props.errorApi
+  };
 
   componentDidMount = () => {
-    const { pokemons } = this.props;
-    this.props.getPokemon(pokemons);
-  };
+    //Console.log(this.props.pokemonsToList)
+  };  
 
   handleFetchdata = () => {
-    this.props.fetchPokemons({ url: this.state.nextPageUrl });
+    this.fetchListPokemons({ url: this.state.nextUrl });
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.pokemonList !== this.props.pokemonList) {
-      const { pokemonList } = nextProps;
-      const pokemons = pokemonList.map((pokemon) => {
-        return pokemon.data;
+  fetchListPokemons = async (url) => {
+    try {
+      const response = await fetch(url.url);
+      const data = await response.json();
+
+      this.setState({
+        loading: false,
+        pokemonsInList: {
+          results: [].concat(this.state.pokemonsInList.results, data.results),
+        }
+        
       });
-      this.setState({ pokeSearch: pokemons });
-    }
-
-    if (
-      this.props.fetchpokemons !== nextProps.fetchpokemons &&
-      !this.props.fetchpokemons
-    ) {
-      this.props.getPokemon(nextProps.fetchpokemons.results);
-      if (nextProps.fetchpokemons.next) {
-        this.setState({ nextPageUrl: nextProps.fetchpokemons.next });
-      } else {
-        this.setState({ infinitHasMore: false });
-      }
-    }
-
-    if (!nextProps.search.next) {
-      this.setState({ infinitHasMore: false });
+    } catch (error) {
+      this.setState({ loading: false, error: error });
     }
   };
 
   renderPokemons = () => {
-    const { pokemonLoad } = this.state;
     const result = [];
-    pokemonLoad.forEach((pokemon, index) => {
+    this.props.pokemonsToList.results.forEach((pokemonToRender, index) => {
       result.push(
         <PokemonSingle
           key={index}
-          pokemon={pokemon}
+          pokemonToSingle={pokemonToRender}
           onSelectPokemon={this.props.onSelectPokemon}
         />
       );
     });
-
     return result;
   };
+
   render() {
     return (
-      <div className="row pokeList">
-        <PokemonSingle />
+      <div
+        id={"pokemonDiv"}
+        className="pokemonDiv"
+        style={{ height: "50rem", overflowX: "hidden", overflowY: "scroll" }}
+      >
         <InfiniteScroll
-          dataLength={this.state.pokemonLoad.length}
+          className="pokemonDiv__infinite"
+          dataLength={this.state.pokemonsInList.results.length}
           next={this.handleFetchdata}
           hasMore={this.state.infinitHasMore}
           loader={
@@ -77,18 +66,13 @@ class PokemonList extends React.Component {
               <h3>Cargando...</h3>
             </div>
           }
-          scrollableTarget="scrollableDiv"
+          scrollableTarget="pokemonDiv"
         >
-          {this.renderPokemons()}
+          <div className="row pokeList">{this.renderPokemons()}</div>;
         </InfiniteScroll>
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ pokemonRedux }) => {
-  const { search, pokemonSearch, pokemonList, fetchpokemons, searchError } = pokemonRedux;
-  return { search, pokemonSearch, pokemonList, fetchpokemons, searchError }
-}
-
-export default connect(mapStateToProps, { getPokemon, fetchPokemons })(PokemonList);   
+export default PokemonList;

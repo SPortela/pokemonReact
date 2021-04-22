@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
-import PokemonReducer from './pokemonReducer';
+import PokeReducer from './Pokemons';
 
 const reducers = combineReducers({
-  pokemonRedux: PokemonReducer,
+  pokeRedux: PokeReducer,
 });
 
 const rootReducer = (state, action) => {
