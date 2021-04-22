@@ -11,7 +11,7 @@ class PokemonList extends Component {
   };
 
   componentDidMount = () => {
-    //Console.log(this.props.pokemonsToList)
+    //console.log(this.props.pokemonsToList)
   };  
 
   handleFetchdata = () => {
@@ -37,7 +37,7 @@ class PokemonList extends Component {
 
   renderPokemons = () => {
     const result = [];
-    this.props.pokemonsToList.results.forEach((pokemonToRender, index) => {
+    this.state.pokemonsInList.results.forEach((pokemonToRender, index) => {
       result.push(
         <PokemonSingle
           key={index}

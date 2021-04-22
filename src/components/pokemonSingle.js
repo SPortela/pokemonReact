@@ -9,7 +9,6 @@ class PokemonSingle extends Component {
     error: null,
   };
   componentDidMount = () => {
-    console.log(this.props)
     this.fetchPokemons();
   };
 
@@ -27,7 +26,7 @@ class PokemonSingle extends Component {
   };
 
   handleClick = (pokemon) => {
-    this.props.onSelectPokemon(pokemon);
+      //this.props.onSelectPokemon(pokemon);
   }
 
   render() {
@@ -39,7 +38,7 @@ class PokemonSingle extends Component {
     return (
       <div
         className="col"
-        onClick={() => this.handleClick(this.props.pokemonToSingle)}
+        onClick={() => this.handleClick(this.state.pokemonInSingle)}
       >
         <div className="item">
           <picture>
